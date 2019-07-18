@@ -720,6 +720,17 @@ typedef struct FFPlayer {
     char *mediacodec_default_name;
     int ijkmeta_delay_init;
     int render_wait_start;
+    
+    AVFormatContext *m_ofmt_ctx;
+    AVOutputFormat *m_ofmt;
+    pthread_mutex_t record_mutex;
+    int is_record;
+    int record_error;
+    int is_first;
+    int64_t start_v_pts;
+    int64_t start_v_dts;
+    int64_t start_a_pts;
+    int64_t start_a_dts;
 } FFPlayer;
 
 #define fftime_to_milliseconds(ts) (av_rescale(ts, 1000, AV_TIME_BASE))
