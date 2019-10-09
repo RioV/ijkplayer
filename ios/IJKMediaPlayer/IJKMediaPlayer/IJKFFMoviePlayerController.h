@@ -96,6 +96,7 @@ typedef enum IJKLogLevel {
 
 - (void)setPauseInBackground:(BOOL)pause;
 - (BOOL)isVideoToolboxOpen;
+- (void)keepPlayStreamWhenResignActive:(BOOL)keepPlay;
 
 - (void)setHudValue:(NSString *)value forKey:(NSString *)key;
 

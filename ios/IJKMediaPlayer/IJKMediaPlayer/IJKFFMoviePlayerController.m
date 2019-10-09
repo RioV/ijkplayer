@@ -455,6 +455,10 @@ void IJKFFIOStatCompleteRegister(void (*cb)(const char *url,
     _pauseInBackground = pause;
 }
 
+- (void)keepPlayStreamWhenResignActive:(BOOL)keepPlay {
+    [_glView keepPlayStreamWhenResignActive:keepPlay];
+}
+
 - (BOOL)isVideoToolboxOpen
 {
     if (!_mediaPlayer)

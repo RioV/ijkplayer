@@ -31,7 +31,8 @@
 typedef NS_ENUM(NSInteger, IJKSDLGLViewApplicationState) {
     IJKSDLGLViewApplicationUnknownState = 0,
     IJKSDLGLViewApplicationForegroundState = 1,
-    IJKSDLGLViewApplicationBackgroundState = 2
+    IJKSDLGLViewApplicationBackgroundState = 2,
+    IJKSDLGLViewApplicationResignActive = 3
 };
 
 @interface IJKSDLGLView()
@@ -63,6 +64,8 @@ typedef NS_ENUM(NSInteger, IJKSDLGLViewApplicationState) {
     NSMutableArray *_registeredNotifications;
 
     IJKSDLGLViewApplicationState _applicationState;
+    
+    BOOL keepPlayStreamWhenResignActive;
 }
 
 @synthesize isThirdGLView              = _isThirdGLView;
@@ -85,6 +88,7 @@ typedef NS_ENUM(NSInteger, IJKSDLGLViewApplicationState) {
         [self registerApplicationObservers];
 
         _didSetupGL = NO;
+        keepPlayStreamWhenResignActive = NO;
         if ([self isApplicationActive] == YES)
             [self setupGLOnce];
     }
@@ -200,6 +204,8 @@ typedef NS_ENUM(NSInteger, IJKSDLGLViewApplicationState) {
     switch (_applicationState) {
         case IJKSDLGLViewApplicationForegroundState:
             return YES;
+        case IJKSDLGLViewApplicationResignActive:
+            return YES;
         case IJKSDLGLViewApplicationBackgroundState:
             return NO;
         default: {
@@ -214,6 +220,10 @@ typedef NS_ENUM(NSInteger, IJKSDLGLViewApplicationState) {
             }
         }
     }
+}
+
+- (void) keepPlayStreamWhenResignActive:(BOOL)keepPlay {
+    keepPlayStreamWhenResignActive = keepPlay;
 }
 
 - (void)dealloc
@@ -517,8 +527,12 @@ typedef NS_ENUM(NSInteger, IJKSDLGLViewApplicationState) {
 - (void)applicationWillResignActive
 {
     NSLog(@"IJKSDLGLView:applicationWillResignActive: %d", (int)[UIApplication sharedApplication].applicationState);
-    [self toggleGLPaused:YES];
-    glFinish();
+    if (keepPlayStreamWhenResignActive == TRUE) {
+        _applicationState = IJKSDLGLViewApplicationResignActive;
+    } else {
+        [self toggleGLPaused:YES];
+        glFinish();
+    }
 }
 
 - (void)applicationDidEnterBackground

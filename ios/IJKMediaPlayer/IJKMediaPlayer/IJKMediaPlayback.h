@@ -74,6 +74,7 @@ typedef NS_ENUM(NSInteger, IJKMPMovieTimeOption) {
 - (BOOL)isPlaying;
 - (void)shutdown;
 - (void)setPauseInBackground:(BOOL)pause;
+- (void)keepPlayStreamWhenResignActive:(BOOL)keepPlay;
 
 @property(nonatomic, readonly)  UIView *view;
 @property(nonatomic)            NSTimeInterval currentPlaybackTime;
@@ -100,6 +101,7 @@ typedef NS_ENUM(NSInteger, IJKMPMovieTimeOption) {
 
 @property (nonatomic) float playbackRate;
 @property (nonatomic) float playbackVolume;
+
 
 - (UIImage *)thumbnailImageAtCurrentTime;
 

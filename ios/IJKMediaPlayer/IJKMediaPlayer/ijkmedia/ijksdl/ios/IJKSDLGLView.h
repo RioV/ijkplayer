@@ -32,6 +32,7 @@
 
 - (id) initWithFrame:(CGRect)frame;
 - (void) display: (SDL_VoutOverlay *) overlay;
+- (void) keepPlayStreamWhenResignActive:(BOOL)keepPlay;
 
 - (UIImage*) snapshot;
 - (void)setShouldLockWhileBeingMovedToWindow:(BOOL)shouldLockWhiteBeingMovedToWindow __attribute__((deprecated("unused")));
