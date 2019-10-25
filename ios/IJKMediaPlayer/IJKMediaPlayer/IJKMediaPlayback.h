@@ -65,6 +65,8 @@ typedef NS_ENUM(NSInteger, IJKMPMovieTimeOption) {
 
 #pragma mark IJKMediaPlayback
 
+typedef void(^GetPixelBufferRef)(CVPixelBufferRef pixelBuffer);
+
 @protocol IJKMediaPlayback <NSObject>
 
 - (void)prepareToPlay;
@@ -102,6 +104,7 @@ typedef NS_ENUM(NSInteger, IJKMPMovieTimeOption) {
 @property (nonatomic) float playbackRate;
 @property (nonatomic) float playbackVolume;
 
+@property (nonatomic, copy) GetPixelBufferRef getPixelBuffer;
 
 - (UIImage *)thumbnailImageAtCurrentTime;
 

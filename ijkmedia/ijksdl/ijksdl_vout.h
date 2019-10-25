@@ -49,6 +49,12 @@ struct SDL_VoutOverlay {
     SDL_Class               *opaque_class;
     SDL_VoutOverlay_Opaque  *opaque;
 
+    // Use to get video frame in Objective C
+    // Equal to opaque.linked_frame (ijksdl_vout_overlay_ffmpeg)
+    // Use videotoolbox cause black twinkling frame on stream view
+    // and sometime, app will crash without log ???
+    AVFrame *video_frame;
+    
     void    (*free_l)(SDL_VoutOverlay *overlay);
     int     (*lock)(SDL_VoutOverlay *overlay);
     int     (*unlock)(SDL_VoutOverlay *overlay);
