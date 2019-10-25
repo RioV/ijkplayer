@@ -214,6 +214,7 @@ void IJKFFIOStatCompleteRegister(void (*cb)(const char *url,
 
         // init video sink
         _glView = [[IJKSDLGLView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        [self handleCVPixelBufferFrame:_glView];
         _glView.isThirdGLView = NO;
         _view = _glView;
         _hudViewController = [[IJKSDLHudViewController alloc] init];
@@ -1807,6 +1808,13 @@ static int ijkff_inject_callback(void *opaque, int message, void *data, size_t d
             [self setHudValue:value forKey:key];
         });
     }
+}
+
+- (void)handleCVPixelBufferFrame:(IJKSDLGLView *)glView {
+    __weak __typeof__(self) weakSelf = self;
+    glView.getPixelBuffer = ^(CVPixelBufferRef pixelBuffer) {
+        weakSelf.getPixelBuffer(pixelBuffer);
+    };
 }
 
 @end

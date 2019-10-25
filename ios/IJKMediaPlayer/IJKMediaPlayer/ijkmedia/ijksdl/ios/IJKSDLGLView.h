@@ -30,6 +30,7 @@
 
 @interface IJKSDLGLView : UIView <IJKSDLGLViewProtocol>
 
+@property (nonatomic, copy) GetPixelBufferRef getPixelBuffer;
 - (id) initWithFrame:(CGRect)frame;
 - (void) display: (SDL_VoutOverlay *) overlay;
 - (void) keepPlayStreamWhenResignActive:(BOOL)keepPlay;
