@@ -371,6 +371,61 @@ typedef NS_ENUM(NSInteger, IJKSDLGLViewApplicationState) {
     });
 }
 
+- (CVPixelBufferRef)converCVPixelBufferRefFromAVFrame:(AVFrame *)avframe
+
+{
+    if (!avframe || !avframe->data[0]) {
+        return NULL;
+    }
+
+    CVPixelBufferRef outputPixelBuffer = NULL;
+    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+                             @(avframe->linesize[0]), kCVPixelBufferBytesPerRowAlignmentKey,
+                             [NSNumber numberWithBool:YES], kCVPixelBufferOpenGLESCompatibilityKey,
+                             [NSDictionary dictionary], kCVPixelBufferIOSurfacePropertiesKey,
+                             nil];
+
+    if (avframe->linesize[1] != avframe->linesize[2]) {
+        return  NULL;
+    }
+
+    size_t srcPlaneSize = avframe->linesize[1]*avframe->height/2;
+    size_t dstPlaneSize = srcPlaneSize *2;
+    uint8_t *dstPlane = malloc(dstPlaneSize);
+
+    for(size_t i = 0; i<srcPlaneSize; i++){
+        dstPlane[2*i  ]=avframe->data[1][i];
+        dstPlane[2*i+1]=avframe->data[2][i];
+    }
+
+    int ret = CVPixelBufferCreate(kCFAllocatorDefault,
+                                  avframe->width,
+                                  avframe->height,
+                                  kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+                                  (__bridge CFDictionaryRef)(options),
+                                  &outputPixelBuffer);
+    
+    CVPixelBufferLockBaseAddress(outputPixelBuffer, 0);
+    size_t bytePerRowY = CVPixelBufferGetBytesPerRowOfPlane(outputPixelBuffer, 0);
+    size_t bytesPerRowUV = CVPixelBufferGetBytesPerRowOfPlane(outputPixelBuffer, 1);
+    
+    void* base =  CVPixelBufferGetBaseAddressOfPlane(outputPixelBuffer, 0);
+    memcpy(base, avframe->data[0], bytePerRowY*avframe->height);
+    
+    base = CVPixelBufferGetBaseAddressOfPlane(outputPixelBuffer, 1);
+    memcpy(base, dstPlane, bytesPerRowUV*avframe->height/2);
+    
+    CVPixelBufferUnlockBaseAddress(outputPixelBuffer, 0);
+    free(dstPlane);
+    
+    if(ret != kCVReturnSuccess) {
+        NSLog(@"CVPixelBufferCreate Failed");
+        return NULL;
+    }
+    
+    return outputPixelBuffer;
+}
+
 // NOTE: overlay could be NULl
 - (void)displayInternal: (SDL_VoutOverlay *) overlay
 {
@@ -382,6 +437,14 @@ typedef NS_ENUM(NSInteger, IJKSDLGLViewApplicationState) {
         }
         return;
     }
+    
+        if (overlay->video_frame) {
+            CVPixelBufferRef frameREF = [self converCVPixelBufferRefFromAVFrame:overlay->video_frame];
+            if (self.getPixelBuffer) {
+                self.getPixelBuffer(frameREF);
+            }
+            CVBufferRelease(frameREF);
+        }
     
         [[self eaglLayer] setContentsScale:_scaleFactor];
 

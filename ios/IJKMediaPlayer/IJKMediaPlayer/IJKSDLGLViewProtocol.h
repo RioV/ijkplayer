@@ -39,8 +39,13 @@ struct IJKOverlay {
     CVPixelBufferRef pixel_buffer;
 };
 
+typedef void(^GetPixelBufferRef)(CVPixelBufferRef pixelBuffer);
+
 @protocol IJKSDLGLViewProtocol <NSObject>
 - (UIImage*) snapshot;
+
+@property (nonatomic, copy) GetPixelBufferRef getPixelBuffer;
+
 @property(nonatomic, readonly) CGFloat  fps;
 @property(nonatomic)        CGFloat  scaleFactor;
 @property(nonatomic)        BOOL  isThirdGLView;
