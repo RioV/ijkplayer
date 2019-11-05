@@ -112,6 +112,11 @@ static void func_free_l(SDL_VoutOverlay *overlay)
     if (!overlay)
         return;
 
+    if (overlay->video_frame) {
+        av_frame_unref(overlay->video_frame);
+        av_frame_free(&overlay->video_frame);
+    }
+    
     SDL_VoutOverlay_Opaque *opaque = overlay->opaque;
     if (!opaque)
         return;
@@ -163,6 +168,7 @@ static int func_fill_frame(SDL_VoutOverlay *overlay, const AVFrame *frame)
     SDL_VoutOverlay_Opaque *opaque = overlay->opaque;
     AVFrame swscale_dst_pic = { { 0 } };
 
+    av_frame_unref(overlay->video_frame);
     av_frame_unref(opaque->linked_frame);
 
     int need_swap_uv = 0;
@@ -215,6 +221,9 @@ static int func_fill_frame(SDL_VoutOverlay *overlay, const AVFrame *frame)
 
         overlay_fill(overlay, opaque->linked_frame, opaque->planes);
 
+        av_frame_ref(overlay->video_frame, frame);
+        overlay_fill(overlay, overlay->video_frame, opaque->planes);
+        
         if (need_swap_uv)
             FFSWAP(Uint8*, overlay->pixels[1], overlay->pixels[2]);
     } else {
@@ -317,6 +326,7 @@ SDL_VoutOverlay *SDL_VoutFFmpeg_CreateOverlay(int width, int height, int frame_f
     opaque->mutex         = SDL_CreateMutex();
     opaque->sws_flags     = SWS_BILINEAR;
 
+    overlay->video_frame  = av_frame_alloc();
     overlay->opaque_class = &g_vout_overlay_ffmpeg_class;
     overlay->format       = overlay_format;
     overlay->pitches      = opaque->pitches;

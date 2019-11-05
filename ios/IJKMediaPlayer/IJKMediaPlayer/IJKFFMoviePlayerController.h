@@ -99,6 +99,7 @@ typedef enum IJKLogLevel {
 - (void)keepPlayStreamWhenResignActive:(BOOL)keepPlay;
 
 - (void)setHudValue:(NSString *)value forKey:(NSString *)key;
+@property (nonatomic, copy) GetPixelBufferRef getPixelBuffer;
 
 + (void)setLogReport:(BOOL)preferLogReport;
 + (void)setLogLevel:(IJKLogLevel)logLevel;
