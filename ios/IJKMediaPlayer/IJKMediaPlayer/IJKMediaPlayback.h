@@ -107,6 +107,9 @@ typedef void(^GetPixelBufferRef)(CVPixelBufferRef pixelBuffer);
 @property (nonatomic, copy) GetPixelBufferRef getPixelBuffer;
 
 - (UIImage *)thumbnailImageAtCurrentTime;
+- (void)stopRecord;
+- (void)startRecordWithFileName:(NSString *)fileName;
+- (BOOL)isRecording;
 
 #pragma mark Notifications
 

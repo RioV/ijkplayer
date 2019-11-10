@@ -451,6 +451,19 @@ void IJKFFIOStatCompleteRegister(void (*cb)(const char *url,
     return ijkmp_is_playing(_mediaPlayer);
 }
 
+- (void)stopRecord {
+    ijkmp_stop_recording(_mediaPlayer);
+}
+
+- (void)startRecordWithFileName:(NSString *)fileName {
+    const char *path = [fileName cStringUsingEncoding:NSUTF8StringEncoding];
+    ijkmp_start_recording(_mediaPlayer, path);
+}
+
+- (BOOL)isRecording {
+    return ijkmp_isRecording(_mediaPlayer);
+}
+    
 - (void)setPauseInBackground:(BOOL)pause
 {
     _pauseInBackground = pause;
