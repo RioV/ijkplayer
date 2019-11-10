@@ -167,7 +167,7 @@ typedef NS_ENUM(NSInteger, IJKSDLGLViewApplicationState) {
 
     [eaglLayer setContentsScale:_scaleFactor];
 
-    _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
     if (_context == nil) {
         NSLog(@"failed to setup EAGLContext\n");
         return NO;
